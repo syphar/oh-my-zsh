@@ -1,7 +1,7 @@
 WRAPPER_FOUND=0
-for wrapsource in "/usr/bin/virtualenvwrapper_lazy.sh" \
-                  "/usr/local/bin/virtualenvwrapper_lazy.sh" \
-                  "/usr/local/share/python/virtualenvwrapper_lazy.sh" \
+for wrapsource in "/usr/bin/virtualenvwrapper.sh" \
+                  "/usr/local/bin/virtualenvwrapper.sh" \
+                  "/usr/local/share/python/virtualenvwrapper.sh" \
                   "/etc/bash_completion.d/virtualenvwrapper"; do
   if [[ -e $wrapsource ]] ; then
     WRAPPER_FOUND=1
