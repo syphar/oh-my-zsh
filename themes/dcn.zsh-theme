@@ -12,9 +12,14 @@ function box_name {
 
 #local return_status="%{$fg[red]%}%(?..✘)%{$reset_color%}"
 
+## Wrap multiple prompt infos
+function git_prompt_info_plus() {
+    echo "$(git_prompt_info) $(git_prompt_ahead)$(git_prompt_behind)"
+}
+
 # based on nanotech
 PROMPT='%F{green}%2c%F{blue} [%f '
-RPROMPT='$(virtualenv_info) $(git_prompt_info) %F{blue}] %F{green}%D{%K:%M}'
+RPROMPT='$(virtualenv_info) $(git_prompt_info_plus) %F{blue}] %F{green}%D{%K:%M}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%F{yellow}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%f"
