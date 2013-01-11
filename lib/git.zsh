@@ -1,34 +1,23 @@
 # get the name of the branch we are on
 function git_prompt_info() {
-  ref=$(git symbolic-ref HEAD 2> /dev/null)
-
-  if [ -z $ref ]; then
-    # check if in detached HEAD mode
-    branch_name=$(git status -sb $(git_submodule_syntax) 2> /dev/null | head -n 1)
-    if [ "$branch_name" = "## HEAD (no branch)" ]; then
-      tag_name=$(git name-rev --name-only $(git --no-pager show --stat 2> /dev/null | head -n 1 | awk '{ print $2 }') 2> /dev/null)
-
-      # set ref to tag name if found, else set to short sha
-      if [ -n $tag_name ]; then
-      	ref=$tag_name
-      else
-		ref=$(git rev-parse --short HEAD 2> /dev/null)
-      fi
-    else
-      return
-    fi
-  fi
-
+  ref=$(git symbolic-ref HEAD 2> /dev/null) || \
+  ref=$(git rev-parse --short HEAD 2> /dev/null) || return
   echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX"
 }
 
 
 # Checks if working tree is dirty
 parse_git_dirty() {
-  if [[ -n $(git status -s $(git_submodule_syntax) 2> /dev/null) ]]; then
-    echo "$ZSH_THEME_GIT_PROMPT_DIRTY"
-  else
-    echo "$ZSH_THEME_GIT_PROMPT_CLEAN"
+  local SUBMODULE_SYNTAX=''
+  if [[ "$(git config --get oh-my-zsh.hide-status)" != "1" ]]; then
+    if [[ $POST_1_7_2_GIT -gt 0 ]]; then
+          SUBMODULE_SYNTAX="--ignore-submodules=dirty"
+    fi
+    if [[ -n $(git status -s ${SUBMODULE_SYNTAX}  2> /dev/null) ]]; then
+      echo "$ZSH_THEME_GIT_PROMPT_DIRTY"
+    else
+      echo "$ZSH_THEME_GIT_PROMPT_CLEAN"
+    fi
   fi
 }
 
@@ -52,26 +41,10 @@ git_remote_status() {
     fi
 }
 
-git_submodule_syntax() {
-  if [[ $POST_1_7_2_GIT -gt 0 ]]; then
-    echo "--ignore-submodules=dirty"
-  else
-    echo ""
-  fi
-}
-
 # Checks if there are commits ahead from remote
 function git_prompt_ahead() {
   if $(echo "$(git log origin/$(current_branch)..HEAD 2> /dev/null)" | grep '^commit' &> /dev/null); then
     echo "$ZSH_THEME_GIT_PROMPT_AHEAD"
-  fi
-}
-
-# Checks if there are commits behind from remote
-function git_prompt_behind() {
-  local cb=$(current_branch)
-  if $(echo "$(git log $cb..origin/$cb 2> /dev/null)" | grep '^commit' &> /dev/null); then
-    echo "$ZSH_THEME_GIT_PROMPT_BEHIND"
   fi
 }
 
@@ -155,5 +128,3 @@ function git_compare_version() {
 POST_1_7_2_GIT=$(git_compare_version "1.7.2")
 #clean up the namespace slightly by removing the checker function
 unset -f git_compare_version
-
-
