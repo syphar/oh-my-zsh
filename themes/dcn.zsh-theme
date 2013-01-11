@@ -12,6 +12,14 @@ function box_name {
 
 #local return_status="%{$fg[red]%}%(?..✘)%{$reset_color%}"
 
+function git_prompt_behind() {
+  local cb=$(current_branch)
+  if $(echo "$(git log $cb..origin/$cb 2> /dev/null)" | grep '^commit' &> /dev/null); then
+    echo "$ZSH_THEME_GIT_PROMPT_BEHIND"
+  fi
+}
+
+
 ## Wrap multiple prompt infos
 function git_prompt_info_plus() {
     echo "$(git_prompt_info) $(git_prompt_ahead)$(git_prompt_behind)"
