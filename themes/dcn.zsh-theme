@@ -26,7 +26,7 @@ function git_prompt_info_plus() {
 }
 
 # based on nanotech
-PROMPT='%F{green}%2c%F{blue} [%f '
+PROMPT='%F{green}%2c%F{blue} $(vi_mode_prompt_info) [%f '
 RPROMPT='$(virtualenv_info) $(git_prompt_info_plus) %F{blue}] %F{green}%D{%K:%M}'
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%F{yellow}"
